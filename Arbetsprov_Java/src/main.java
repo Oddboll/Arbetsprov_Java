@@ -9,7 +9,7 @@ public static final int NOT_IN_STOCK = 1;
 public static final int DOES_NOT_EXIST = 2;
 
 	public static void main(String[] args){
-		BooklistImplementation bookList = new BooklistImplementation();
+		BookList bookList = new BooklistImplementation();
         
         Book[] books = bookList.List("rich");
         for(Book b : books)
