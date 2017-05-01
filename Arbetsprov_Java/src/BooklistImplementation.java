@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 import java.util.LinkedHashMap;
 import java.math.BigDecimal;
 public class BooklistImplementation implements BookList{
@@ -11,14 +12,11 @@ public static final int NOT_IN_STOCK = 1;
 public static final int DOES_NOT_EXIST = 2;
 
 //private:
-private Map<Book, Integer> bookList = new LinkedHashMap<Book, Integer>();
-	
+private Map<Book, Integer> m_bookList = new LinkedHashMap<Book, Integer>();	//map with entire inventory and quantity
+
 	public BooklistImplementation ()
 	{
 
-        Book b = new Book("едц", "hej", new BigDecimal(2));
-        Add(b, 2);
-		ReadFromFile();
 	}
 	
 	public void ReadFromFile()
@@ -33,7 +31,7 @@ private Map<Book, Integer> bookList = new LinkedHashMap<Book, Integer>();
 						String s[] = line.split(";");
 						Book newBook;
 						newBook = new Book(s[0], s[1], new BigDecimal(s[2].replaceAll(",", "")));
-						bookList.put(newBook, Integer.parseInt(s[3]));
+						m_bookList.put(newBook, Integer.parseInt(s[3]));
 					}
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -48,31 +46,46 @@ private Map<Book, Integer> bookList = new LinkedHashMap<Book, Integer>();
 	
 	public Book[] List(String searchString)
 	{
-		ArrayList<Book> foundBooks = new ArrayList<Book>();
-		String[]search = searchString.split(" ");
-		for(Book book : bookList.keySet())
+		Book[] returnArray;
+		if(searchString == "*")
 		{
-			String[] bookString = book.GetSearchString().replace(",", "").split(" ");
-			for(String b : bookString)
+			Set<Book> keys = m_bookList.keySet();
+			returnArray = keys.toArray(new Book[m_bookList.size()]);
+			
+			return returnArray;
+		}
+		
+		ArrayList<Book> foundBooks = new ArrayList<Book>();
+		String[]search = searchString.split(" ");	//split search string to array
+		for(Book book : m_bookList.keySet())
+		{
+			String[] bookString = book.GetSearchString().replace(",", "").split(" ");	//get books search string and split to array
+			for(String b : bookString)	//iterate over the two arrays and compare
 			{
+				boolean found = false;
 				for(String s : search)
 				{
 					if(b.equalsIgnoreCase(s))
+					{
 						foundBooks.add(book);
+						found = true;
+					}
 				}
+				if(found)		//if already found, don't check again. No duplicates
+					break;
 			}
 		}
 		
-		Book[] returnArray = foundBooks.toArray(new Book[foundBooks.size()]);
+		returnArray = foundBooks.toArray(new Book[foundBooks.size()]);
 		return returnArray;
 	}
 	
 	public boolean Add(Book book, int quantity)
 	{
-		if(bookList.containsKey(book))
+		if(m_bookList.containsKey(book))
 			return false;
 		
-		bookList.put(book, quantity);
+		m_bookList.put(book, quantity);
 		return true;
 	}
 	
@@ -81,9 +94,9 @@ private Map<Book, Integer> bookList = new LinkedHashMap<Book, Integer>();
 		ArrayList<Integer>status = new ArrayList<Integer>();
 		for(Book book : b)
 		{
-			if(bookList.containsKey(book))
+			if(m_bookList.containsKey(book))
 			{
-				Integer value = bookList.get(book);
+				Integer value = m_bookList.get(book);
 				if(value > 0)
 					status.add(OK);
 				else if(value == 0)

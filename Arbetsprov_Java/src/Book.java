@@ -18,6 +18,11 @@ public class Book {
 		return m_author + ", " + m_title; 
 	}
 	
+	public String GetFullString()
+	{
+		return m_author + ", " + m_title+": "+m_price+"kr.";
+	}
+	
 	public BigDecimal GetPrice()
 	{
 		return m_price;

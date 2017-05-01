@@ -10,10 +10,12 @@ public static final int DOES_NOT_EXIST = 2;
 
 	public static void main(String[] args){
 		BookList bookList = new BooklistImplementation();
-        
-        Book[] books = bookList.List("rich");
+        bookList.ReadFromFile();
+		
+        Book[] books = bookList.List("*");
+        System.out.println("found "+books.length+" books.");
         for(Book b : books)
-        	System.out.println(b.GetSearchString());
+        	System.out.println(b.GetFullString());
         int[] status = bookList.buy(books);
         for(int i = 0; i < status.length; i++)
         {
